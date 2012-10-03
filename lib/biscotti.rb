@@ -23,7 +23,7 @@ module Biscotti
     Process.wait(pid)
   end
 
-  def self.users &block
+  def self.system_users &block
     if block
       each_passwd_enum.each(&block)
     else
@@ -31,7 +31,7 @@ module Biscotti
     end
   end
 
-  def self.groups &block
+  def self.system_groups &block
     if block
       each_group_enum.each(&block)
     else
