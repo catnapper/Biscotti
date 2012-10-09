@@ -24,38 +24,35 @@ module Biscotti
   end
 
   def self.system_users &block
-    if block
-      each_passwd_enum.each(&block)
-    else
-      each_passwd_enum
-    end
+    return enum_for(:each_passwd_enum) unless block
+    each_passwd_enum(&block)
   end
 
   def self.system_groups &block
-    if block
-      each_group_enum.each(&block)
-    else
-      each_group_enum
-    end
+    return enum_for(:each_group_enum) unless block
+    each_passwd_enum(&block)
+  end
+
+  # feed this an array of lambdas that return PIDs of children processes.
+  def self.build_pipeline cmd_array
+
   end
 
   private
 
-  def self.each_passwd_enum
-    parse_user_file('/etc/passwd', Passwd, [nil, nil, :to_i, :to_i, nil, nil, nil])
+  def self.each_passwd_enum &block
+    parse_user_file('/etc/passwd', Passwd, [nil, nil, :to_i, :to_i, nil, nil, nil], &block)
   end
 
-  def self.each_group_enum
-    parse_user_file('/etc/group', Group, [nil, nil, :to_i, ->(e){e.split(',')}])
+  def self.each_group_enum &block
+    parse_user_file('/etc/group', Group, [nil, nil, :to_i, ->(e){e.split(',')}], &block)
   end
 
   def self.parse_user_file filename, klass, operations_array
-    Enumerator.new do |yielder|
-      IO.readlines(filename).each do |line|
-        raw_fields = line.strip.split(':')
-        f = transform_line(raw_fields, operations_array)
-        yielder.yield klass.new(*f)
-      end
+    IO.readlines(filename).each do |line|
+      raw_fields = line.strip.split(':')
+      f = transform_line(raw_fields, operations_array)
+      yield klass.new(*f)
     end
   end
 
