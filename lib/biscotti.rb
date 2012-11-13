@@ -1,4 +1,5 @@
 require 'biscotti/version'
+require 'biscotti/process'
 require 'values'
 
 module Biscotti
@@ -31,11 +32,6 @@ module Biscotti
   def self.system_groups &block
     return enum_for(:each_group_enum) unless block
     each_passwd_enum(&block)
-  end
-
-  # feed this an array of lambdas that return PIDs of children processes.
-  def self.build_pipeline cmd_array
-
   end
 
   private
@@ -90,6 +86,28 @@ module Biscotti
     var_set.each { |k,v| ENV[k] = v }
   end
 
+end
 
+module Biscotti
+  
+  class SubProcess
+  
+    def initialize &block
+      @cmd = []
+      instance_eval &block
+    end
+    
+    def command
+    end
+
+
+  end
+
+
+  private
+
+  def fd_path io
+    "/proc/#{Process.pid}/fd/#{io.fileno}"
+  end
 
 end
