@@ -87,27 +87,3 @@ module Biscotti
   end
 
 end
-
-module Biscotti
-  
-  class SubProcess
-  
-    def initialize &block
-      @cmd = []
-      instance_eval &block
-    end
-    
-    def command
-    end
-
-
-  end
-
-
-  private
-
-  def fd_path io
-    "/proc/#{Process.pid}/fd/#{io.fileno}"
-  end
-
-end
